@@ -1,8 +1,7 @@
 package com.gmail.haloinverse.DynamicMarket;
 
-import com.nijikokun.bukkit.Permissions.Permissions;
 import com.nijiko.coelho.iConomy.iConomy;
-
+import com.nijikokun.bukkit.Permissions.Permissions;
 
 
 import java.io.*;
@@ -22,7 +21,7 @@ public class DynamicMarket extends JavaPlugin
 	public static final Logger log = Logger.getLogger("Minecraft");
  
 	public static String name; // = "SimpleMarket";
-	public String codename = "Phoenix";
+	public String codename = "Jeanine";
 	public String version; // = "0.4a";
  
 	public iListen playerListener = new iListen(this);
@@ -132,6 +131,12 @@ public class DynamicMarket extends JavaPlugin
 			if(isok) 
 			System.out.println("[DynamicMarket] Downloaded MySQL Successfully.");
 		}
+		File c = new File(getDataFolder() + "/items.db");
+		if(!c.exists()) {
+			isok = FileDownloader.fileDownload("http://www.brisner.no/DynamicMarket/items.db", getDataFolder().toString());
+			if(isok) 
+			System.out.println("[DynamicMarket] items.db downloaded successfully");
+		}
 	}
 		
 	@Override
@@ -226,12 +231,9 @@ public class DynamicMarket extends JavaPlugin
 
 	public static void iConomyData()
 	{
-		//iConomy = thisPlugin;
-	
-
 		currency = iConomy.getBank().getCurrency();
 		econLoaded = true;
-		log.info(Messaging.bracketize(name) + " iConomy connected.");
+		log.info(Messaging.bracketize(name) + " iConomy connected.");	
 	}
 	
 	public static enum EconType

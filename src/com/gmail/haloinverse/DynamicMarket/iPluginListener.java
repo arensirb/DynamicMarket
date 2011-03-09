@@ -24,21 +24,25 @@ public class iPluginListener extends ServerListener {
  
     @Override
     public void onPluginEnabled(PluginEvent event) {
-        if(DynamicMarket.getiConomy() == null) {
-            Plugin iConomy = DynamicMarket.getTheServer().getPluginManager().getPlugin("iConomy");
- 
-            if (iConomy != null) {
-                DynamicMarket.setiConomy((iConomy)iConomy);
-                DynamicMarket.iConomyData();
-            }
-        }
-        if(DynamicMarket.getPermissions() == null) {
-        	Plugin Permissions = DynamicMarket.getTheServer().getPluginManager().getPlugin("Permissions");
-        	
-        	if(Permissions != null) {
-        		DynamicMarket.setPermissions((Permissions)Permissions);
-        		System.out.println("[DynamicMarket] Successfully linked with Permissions.");
-        	}
-        }
+    	if(event.getPlugin().getDescription().getName().equals("iConomy")) {
+	        if(DynamicMarket.getiConomy() == null) {
+	            Plugin iConomy = DynamicMarket.getTheServer().getPluginManager().getPlugin("iConomy");
+	 
+	            if (iConomy != null) {
+	                DynamicMarket.setiConomy((iConomy)iConomy);
+	                DynamicMarket.iConomyData();
+	            }
+	        }
+    	}
+    	if(event.getPlugin().getDescription().getName().equals("Permissions")) {
+	        if(DynamicMarket.getPermissions() == null) {
+	        	Plugin Permissions = DynamicMarket.getTheServer().getPluginManager().getPlugin("Permissions");
+	        	
+	        	if(Permissions != null) {
+	        		DynamicMarket.setPermissions((Permissions)Permissions);
+	        		System.out.println("[DynamicMarket] Successfully linked with Permissions.");
+	        	}
+	        }
+    	}
     }
 }
