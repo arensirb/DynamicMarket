@@ -37,15 +37,8 @@ public class DatabaseMarket extends DatabaseCore
 		{
 			myQuery.prepareStatement("ALTER TABLE " + tableName + " ADD "+columnName + " " + columnDef);
 			myQuery.executeUpdate();
-			if(this.database.equals(Type.SQLITE)) {
-				myQuery.prepareStatement("CREATE INDEX shoplabelIndex ON Market (shoplabel)");
-				myQuery.executeUpdate();
-			} else {
-				myQuery.prepareStatement("CREATE INDEX shopLabelIndex ON Market (shopLabel)");
-				myQuery.executeUpdate();		
-			}
-			
-
+			myQuery.prepareStatement("CREATE INDEX shoplabelIndex ON Market (shoplabel)");
+			myQuery.executeUpdate();
 		}
 	}
 	
@@ -316,41 +309,50 @@ public class DatabaseMarket extends DatabaseCore
 		return false;
 	}
 	public MarketItem data(ItemClump thisItem, String shopLabel) {
-	  //CHANGED: Returns MarketItems now.
-		SQLHandler myQuery = new SQLHandler(this);
-		MarketItem fetchedData = null;
+        // CHANGED: Returns MarketItems now.
+        SQLHandler myQuery = new SQLHandler(this);
+        MarketItem fetchedData = null;
 
-		myQuery.inputList.add(thisItem.itemId);
-		myQuery.inputList.add(thisItem.subType);
-  		myQuery.inputList.add(shopLabel);
-		myQuery.prepareStatement("SELECT * FROM " + tableName + " WHERE (item = ? AND subtype = ? AND shoplabel = ?) LIMIT 1");
+        myQuery.inputList.add(thisItem.itemId);
+        myQuery.inputList.add(thisItem.subType);
+        myQuery.inputList.add(shopLabel);
+        myQuery.prepareStatement("SELECT * FROM " + tableName
+                + " WHERE (item = ? AND subtype = ? AND shoplabel = ?) LIMIT 1");
 
-		myQuery.executeQuery();
+        myQuery.executeQuery();
 
-		try {
-			if (myQuery.rs != null)
-				if (myQuery.rs.next())
-					//data = new ShopItem(myQuery.rs.getInt("item"), myQuery.rs.getInt("type"), myQuery.rs.getInt("buy"), myQuery.rs.getInt("sell"), myQuery.rs.getInt("per"));
-					fetchedData = new MarketItem(myQuery);
-					fetchedData.shopLabel = shopLabel;
-					fetchedData.thisDatabase = this;
-					// TODO: Change constructor to take a ResultSet and throw SQLExceptions.
-		} catch (SQLException ex) {
-			logSevereException("Error retrieving shop item data with " + dbTypeString(), ex);
-			fetchedData = null;
-		}
-		
-		// Temp until constructor throws SQLExceptions
-		if (!(myQuery.isOK))
-			fetchedData = null;
-		
-		myQuery.close();
+        try {
+            if (myQuery.rs != null)
+                if (myQuery.rs.next()) {
+                    // data = new ShopItem(myQuery.rs.getInt("item"),
+                    // myQuery.rs.getInt("type"), myQuery.rs.getInt("buy"),
+                    // myQuery.rs.getInt("sell"), myQuery.rs.getInt("per"));
+                    fetchedData = new MarketItem(myQuery);
+                    if (fetchedData == null) {
+                    	DynamicMarket.log.info(Messaging.bracketize(DynamicMarket.name) + "MarketItem creation from query failed. " + dbTypeString());
+                        myQuery.close();
+                        return null;
+                    }
+                    fetchedData.thisDatabase = this;
+                    // TODO: Change constructor to take a ResultSet and throw
+                    // SQLExceptions.
+                }
+        } catch (SQLException ex) {
+            logSevereException("Error retrieving shop item data with " + dbTypeString(), ex);
+            fetchedData = null;
+        }
 
-		//if (data == null) { data = new MarketItem(); }
-		//Return null if no matching data found.
-		
-		return fetchedData;
-	}
+        // Temp until constructor throws SQLExceptions
+        if (!(myQuery.isOK))
+            fetchedData = null;
+
+        myQuery.close();
+
+        // if (data == null) { data = new MarketItem(); }
+        // Return null if no matching data found.
+
+        return fetchedData;
+    }
 	
 	public boolean hasRecord(MarketItem thisItem)
 	{
